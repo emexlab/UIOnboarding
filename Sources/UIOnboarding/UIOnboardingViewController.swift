@@ -12,6 +12,15 @@ public final class UIOnboardingViewController: UIViewController {
     private var onboardingStackView: UIOnboardingStack!
     private var onboardingStackViewWidth: NSLayoutConstraint!
     
+    public var backgroundColor: UIColor? {
+        get {
+            self.onboardingScrollView.backgroundColor
+        }
+        set {
+            self.onboardingScrollView.backgroundColor = newValue
+        }
+    }
+    
     private var topOverlayView: UIOnboardingOverlay!
     private var bottomOverlayView: UIOnboardingOverlay!
     
@@ -53,13 +62,13 @@ public final class UIOnboardingViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .fullScreen
         
-        #if swift(>=5.9)
-            if #available(iOS 17.0, *) {
-                registerForTraitChanges([UITraitHorizontalSizeClass.self]) { (self: Self, _) in
-                    self.handleHorizontalSizeClassChange()
-                }
+        if #available(iOS 17.0, *) {
+            registerForTraitChanges([UITraitHorizontalSizeClass.self]) { (self: Self, _) in
+                self.handleHorizontalSizeClassChange()
             }
-        #endif
+        }
+        
+        configureScrollView()
     }
     
     required init?(coder: NSCoder) {
@@ -73,7 +82,6 @@ public final class UIOnboardingViewController: UIViewController {
         
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        configureScrollView()
         setUpTopOverlay()
     }
         
@@ -112,7 +120,6 @@ public final class UIOnboardingViewController: UIViewController {
         onboardingStackView.onboardingTitleLabelStack.configureFont(traitCollection.horizontalSizeClass == .regular ? 80 : (UIScreenType.isiPhoneSE || UIScreenType.isiPhone6s ? 41 : 44))
 
         continueButtonHeight.constant = UIFontMetrics.default.scaledValue(for: traitCollection.horizontalSizeClass == .regular ? 50 : (UIScreenType.isiPhoneSE ? 48 : 52))
-        continueButton.configureFont()
         
         onboardingTextView?.configureFont()
         needsUIRefresh = true

@@ -23,6 +23,9 @@ final class OnboardingIcon: UIImageView {
         layer.cornerRadius = iconSize * 0.2237
         layer.cornerCurve = .continuous
         
+        contentMode = .scaleAspectFill
+        layer.magnificationFilter = .trilinear
+        
         heightAnchor.constraint(equalToConstant: iconSize).isActive = true
         widthAnchor.constraint(equalTo: heightAnchor).isActive = true
         clipsToBounds = true
