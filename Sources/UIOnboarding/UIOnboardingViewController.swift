@@ -18,6 +18,7 @@ public final class UIOnboardingViewController: UIViewController {
         }
         set {
             self.onboardingScrollView.backgroundColor = newValue
+            self.view.backgroundColor = newValue
         }
     }
     
@@ -185,12 +186,15 @@ private extension UIOnboardingViewController {
 
     func setUpTopOverlay() {
         topOverlayView = .init(frame: .zero)
-        view.addSubview(topOverlayView)
         
-        topOverlayView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        topOverlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        topOverlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        topOverlayView.heightAnchor.constraint(equalToConstant: getStatusBarHeight()).isActive = true
+        // on iOS 26 this effect is better and build in
+        if #unavailable(iOS 26.0) {
+            view.addSubview(topOverlayView)
+            topOverlayView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+            topOverlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+            topOverlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+            topOverlayView.heightAnchor.constraint(equalToConstant: getStatusBarHeight()).isActive = true
+        }
     }
 
     func setUpBottomOverlay() {
@@ -200,6 +204,15 @@ private extension UIOnboardingViewController {
         bottomOverlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         bottomOverlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         bottomOverlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        
+        if #available(iOS 26.0, *) {
+            onboardingScrollView.bottomEdgeEffect.style = .soft
+            
+            let interaction = UIScrollEdgeElementContainerInteraction()
+            interaction.scrollView = onboardingScrollView
+            interaction.edge = .bottom
+            bottomOverlayView.addInteraction(interaction)
+        }
         
         setUpOnboardingButton()
         setUpOnboardingTextView()
@@ -286,7 +299,9 @@ private extension UIOnboardingViewController {
         continueButtonWidth.constant = traitCollection.horizontalSizeClass == .regular ? 340 : (traitCollection.horizontalSizeClass == .compact && view.frame.width == 320 ? view.frame.width - 60 : (isiPadPro && traitCollection.horizontalSizeClass == .compact && view.frame.width == 639 ? 300 : view.frame.width - (UIScreenType.setUpPadding() * 2)))
                 
         view.layoutIfNeeded()
-        bottomOverlayView.subviews.first?.alpha = enoughSpaceToShowFullList ? 1 : 0
+        if #unavailable(iOS 26.0) {
+            bottomOverlayView.subviews.first?.alpha = enoughSpaceToShowFullList ? 1 : 0
+        }
         onboardingScrollView.isScrollEnabled = enoughSpaceToShowFullList
         onboardingScrollView.showsVerticalScrollIndicator = enoughSpaceToShowFullList
         

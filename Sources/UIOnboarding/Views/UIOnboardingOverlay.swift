@@ -21,13 +21,18 @@ final class UIOnboardingOverlay: UIView {
     
     private func prepareForOnboarding() {
         translatesAutoresizingMaskIntoConstraints = false
-
+        
         let blurEffect: UIBlurEffect = .init(style: .regular)
         blurEffectView = .init(effect: blurEffect)
         blurEffectView.frame = bounds
         blurEffectView.backgroundColor = UIAccessibility.isReduceTransparencyEnabled ? .systemBackground : nil
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        addSubview(blurEffectView)
+        
+        // fuck this shit man
+        if #unavailable(iOS 26.0) {
+            addSubview(blurEffectView)
+        }
+        
         alpha = 0
     }
 }
